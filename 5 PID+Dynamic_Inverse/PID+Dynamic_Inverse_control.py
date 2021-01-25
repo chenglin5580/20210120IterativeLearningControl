@@ -16,7 +16,7 @@ class PID_Dynamic_Inverse_controller(object):
         self.pro = Virtual_problem()
         self.xd = np.array([1, 0])
 
-        self.e_sum = 0
+        self.e_sum = 0.
 
     def fun_controller(self, x, xd):
 
@@ -28,26 +28,24 @@ class PID_Dynamic_Inverse_controller(object):
         lambda_x = 3
         x_dot2 = 0 + 2 * lambda_x * e_dot1 + lambda_x **2 * e_dot0
 
-        u1 = x_dot2 - 3 * x_dot0 - 0.1 * np.sin(x_dot0) + 1
+        u1 = x_dot2 - 3 * x_dot0 - 0.1 * np.sin(x_dot0) + 0
 
-        kp = 8
-        kd = 4
-        ki = 4
+        kp = lambda_x ** 2
+        kd = 2 * lambda_x
+
         e_dot0 = xd[0] - x[0]
         e_dot1 = xd[1] - x[1]
 
-        # if abs(e_dot0) > 0.2:
-        #     self.e_sum = 0
-        # else:
-        #     self.e_sum += e_dot0 * self.pro.t_delta
+        u2 = kp * e_dot0  + kd * e_dot1
 
-        self.e_sum += e_dot0 * self.pro.t_delta
 
-        omega = 0.1
-        # omega = 1.0
-        u2 = omega * kp * e_dot0 + ki * self.e_sum + omega * kd * e_dot1
+        ki = 10
+        s = lambda_x * e_dot0 + e_dot1
+        self.e_sum += s * self.pro.t_delta
+        u3 =  ki * self.e_sum
 
-        u = (1 - omega) * u1 + u2
+        omega = 0.99
+        u = (1 - omega) * u1 + omega * u2  + (0.5 + 0.5 * omega) * u3
 
         return u
 
@@ -61,7 +59,7 @@ class PID_Dynamic_Inverse_controller(object):
         t_tra = np.empty([1, 0])
 
 
-        for i in range(15000):
+        for i in range(5000):
 
             xd = np.array([i*self.pro.t_delta/5 + 1, 0.2])
             xd = self.xd

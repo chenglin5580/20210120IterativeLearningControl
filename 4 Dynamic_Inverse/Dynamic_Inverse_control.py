@@ -16,6 +16,9 @@ class Dynamic_Inverse_controller(object):
         self.pro = Virtual_problem()
         self.xd = np.array([1, 0])
 
+
+        self.e_s = 0
+
     def fun_controller(self, x, xd):
 
         x_dot0 = x[0]
@@ -23,10 +26,14 @@ class Dynamic_Inverse_controller(object):
         e_dot0 = xd[0] - x[0]
         e_dot1 = xd[1] - x[1]
 
-        lambda_x = 2
-        x_dot2 = 0 + 2 * lambda_x * e_dot1 + lambda_x **2 * e_dot0
+        lambda_x = 4
 
-        u = x_dot2 - 3 * x_dot0 - 0.1 * np.sin(x_dot0) + 0
+        s = lambda_x * e_dot0 + e_dot1
+        self.e_s += s * self.pro.t_delta
+
+        x_dot2 = 0 + 2 * lambda_x * e_dot1 + lambda_x **2 * e_dot0 + 4.0 * self.e_s
+
+        u = x_dot2 - 3 * x_dot0 - 0.1 * np.sin(x_dot0) + 1
 
         return u
 

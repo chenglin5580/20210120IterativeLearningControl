@@ -27,9 +27,30 @@ class PID_controller(object):
         e_dot1 = xd[1] - x[1]
         self.e_sum += e_dot0 * self.pro.t_delta
 
-        u = kp * e_dot0 + ki *  self.e_sum + kd * e_dot1
+        u = kp * e_dot0 + ki * self.e_sum + kd * e_dot1
 
         return u
+
+
+    def fun_controller2(self, x, xd):
+
+        lambda_x = 4
+
+        kp = lambda_x ** 2
+        kd = 2 * lambda_x
+        ki = 4
+
+        e_dot0 = xd[0] - x[0]
+        e_dot1 = xd[1] - x[1]
+
+        s = e_dot0
+        s = lambda_x * e_dot0 + e_dot1
+        self.e_sum += s * self.pro.t_delta
+
+        u = kp * e_dot0  + ki * self.e_sum + kd * e_dot1
+
+        return u
+
 
 
     def fun_flight(self):
@@ -41,9 +62,10 @@ class PID_controller(object):
         t_tra = np.empty([1, 0])
 
 
-        for i in range(15000):
+        for i in range(5000):
 
-            u = self.fun_controller(x, self.xd)
+            # u = self.fun_controller(x, self.xd)
+            u = self.fun_controller2(x, self.xd)
             x, t = self.pro.fun_state_update(u)
 
             x_tra = np.hstack((x_tra, x.reshape([2, 1])))
