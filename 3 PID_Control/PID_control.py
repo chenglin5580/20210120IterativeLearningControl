@@ -1,6 +1,14 @@
 
 
 
+"""
+说明
+程林，2021.01.25
+PID 实现控制
+值得说明的是：
+在这里，我们对PID的
+"""
+
 ################################ Package Import ####################################
 import numpy as np
 import matplotlib.pyplot as plt
@@ -38,7 +46,7 @@ class PID_controller(object):
 
         kp = lambda_x ** 2
         kd = 2 * lambda_x
-        ki = 4
+        ki = (lambda_x/2) ** 2
 
         e_dot0 = xd[0] - x[0]
         e_dot1 = xd[1] - x[1]
@@ -62,14 +70,19 @@ class PID_controller(object):
         t_tra = np.empty([1, 0])
 
 
-        for i in range(5000):
+        for i in range(10000):
 
-            # u = self.fun_controller(x, self.xd)
-            u = self.fun_controller2(x, self.xd)
+            if i <5000:
+                xd = self.xd
+            else:
+                xd = 2 * self.xd
+
+            # u = self.fun_controller(x, xd)
+            u = self.fun_controller2(x, xd)
             x, t = self.pro.fun_state_update(u)
 
             x_tra = np.hstack((x_tra, x.reshape([2, 1])))
-            xd_tra = np.hstack((xd_tra, self.xd.reshape([2, 1])))
+            xd_tra = np.hstack((xd_tra, xd.reshape([2, 1])))
             u_tra = np.hstack((u_tra, u.reshape([1, 1])))
             t_tra = np.hstack((t_tra, t.reshape([1, 1])))
 
@@ -80,8 +93,8 @@ class PID_controller(object):
         plt.plot(t_tra[0, :], x_tra[0, :])
 
         plt.figure(2)
-        plt.plot(t_tra[0, :], x_tra[0, :], 'r-')
-        plt.plot(t_tra[0, :], xd_tra[0, :])
+        plt.plot(t_tra[0, :], x_tra[1, :], 'r-')
+        plt.plot(t_tra[0, :], xd_tra[1, :])
 
         plt.figure(3)
         plt.plot(t_tra[0, :], u_tra[0, :])

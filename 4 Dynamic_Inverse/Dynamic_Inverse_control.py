@@ -31,9 +31,9 @@ class Dynamic_Inverse_controller(object):
         s = lambda_x * e_dot0 + e_dot1
         self.e_s += s * self.pro.t_delta
 
-        x_dot2 = 0 + 2 * lambda_x * e_dot1 + lambda_x **2 * e_dot0 + 4.0 * self.e_s
+        x_dot2 = 0 + 2 * lambda_x * e_dot1 + lambda_x **2 * e_dot0 + 10.0 * self.e_s
 
-        u = x_dot2 - 3 * x_dot0 - 0.1 * np.sin(x_dot0) + 1
+        u = x_dot2 - 3 * x_dot0 - 0.1 * np.sin(x_dot0) + 5
 
         return u
 

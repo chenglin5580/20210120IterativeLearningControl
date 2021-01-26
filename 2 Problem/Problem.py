@@ -41,6 +41,8 @@ class Virtual_problem(object):
         x_dot1 = x[1]
         x_dot2 = 3 * x_dot0 + u + 0.1 * np.sin(x_dot0)
 
+        a = 1
+
         x_dot = np.array([x_dot1, x_dot2])
         return x_dot
 

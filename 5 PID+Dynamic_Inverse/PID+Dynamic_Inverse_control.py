@@ -25,10 +25,10 @@ class PID_Dynamic_Inverse_controller(object):
         e_dot0 = xd[0] - x[0]
         e_dot1 = xd[1] - x[1]
 
-        lambda_x = 3
+        lambda_x = 4
         x_dot2 = 0 + 2 * lambda_x * e_dot1 + lambda_x **2 * e_dot0
 
-        u1 = x_dot2 - 3 * x_dot0 - 0.1 * np.sin(x_dot0) + 0
+        u1 = x_dot2 - 3 * x_dot0 - 0.1 * np.sin(x_dot0) + 4
 
         kp = lambda_x ** 2
         kd = 2 * lambda_x
@@ -39,13 +39,14 @@ class PID_Dynamic_Inverse_controller(object):
         u2 = kp * e_dot0  + kd * e_dot1
 
 
-        ki = 10
+
+        ki = (lambda_x / 2) ** 2 * 1
         s = lambda_x * e_dot0 + e_dot1
         self.e_sum += s * self.pro.t_delta
         u3 =  ki * self.e_sum
 
         omega = 0.99
-        u = (1 - omega) * u1 + omega * u2  + (0.5 + 0.5 * omega) * u3
+        u = (1 - omega) * u1 + omega * u2  + 1. * u3
 
         return u
 
@@ -54,6 +55,7 @@ class PID_Dynamic_Inverse_controller(object):
 
         x, t = self.pro.fun_reset()
         x_tra = np.empty([2, 0])
+
         xd_tra = np.empty([2, 0])
         u_tra = np.empty([1, 0])
         t_tra = np.empty([1, 0])
@@ -62,7 +64,7 @@ class PID_Dynamic_Inverse_controller(object):
         for i in range(5000):
 
             xd = np.array([i*self.pro.t_delta/5 + 1, 0.2])
-            xd = self.xd
+            # xd = self.xd
 
             u = self.fun_controller(x, xd)
             x, t = self.pro.fun_state_update(u)
@@ -86,6 +88,8 @@ class PID_Dynamic_Inverse_controller(object):
         plt.plot(t_tra[0, :], u_tra[0, :])
 
         plt.show()
+
+
 
 
 
